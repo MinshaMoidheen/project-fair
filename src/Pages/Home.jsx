@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { Col, Row } from 'react-bootstrap'
 import gifimage from '../assets/images/image10.gif'
-import ProjectCard from '../Components/ProjectCart'
+import ProjectCart from '../Components/ProjectCart'
 import { Link, useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { getHomeProjectAPI } from '../services/allAPI'
 function Home() {
 
   const [isLoggedIn,setIsLoggedIn]=useState(false)
+  const navigate=useNavigate()
+  const [allProjects,setAllProjects]=useState([])
 
   useEffect(()=>{
+    getHomeProjects()
     if(sessionStorage.getItem("token")){
       setIsLoggedIn(true)
     }
@@ -17,6 +21,16 @@ function Home() {
       setIsLoggedIn(false)
     }
   })
+
+  const getHomeProjects=async()=>{
+    const result = await getHomeProjectAPI()
+    if(result.status==200){
+      setAllProjects(result.data)
+    }else{
+      console.log(result);
+      
+    }
+  }
 
 
   const handleProjectsPage=()=>{
@@ -54,20 +68,13 @@ function Home() {
       <h1 className='text-dark text-center fw-bolder'>Explore Your Projects</h1>
       <marquee scrollAmount={25}>
       <Row>
-
-      <Col sm={12} md={6} lg={4} >
-      <ProjectCard/>
-      </Col>
-
-      <Col sm={12} md={6} lg={4} >
-      <ProjectCard/>
-      </Col>
-
-      <Col sm={12} md={6} lg={4} >
-      <ProjectCard/>
-      </Col>
-
-
+        {allProjects?.length>0?allProjects.map(project=>(
+          <Col sm={12}  md={6} lg={4}>
+          <ProjectCart project={project}/>
+          </Col>
+        )):null
+      }  
+        
       </Row>
       </marquee>
     </div>

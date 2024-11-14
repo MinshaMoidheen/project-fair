@@ -1,9 +1,46 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../Components/Header'
 import { Col, Row } from 'react-bootstrap'
 import ProjectCart from '../Components/ProjectCart'
+import { getAllProjectAPI } from '../services/allAPI'
+import { all } from 'axios'
 
 function Projects() {
+
+  const[allprojects,setAllProjects]=useState([])
+
+  const getAllProjects=async()=>{
+    const token=sessionStorage.getItem('token')
+    if(token){
+      const reqHeader={
+        "Content-Type":"multipart/form-data",
+        'authorization':`Bearer ${token}`
+       
+        }
+
+        try{
+          const result=await getAllProjectAPI(reqHeader)
+          if(result.status==200){
+            setAllProjects(result.data)
+          }
+          else{
+            console.log(result)
+          }
+
+        }catch(err){
+console.log(err);
+
+        }
+    }
+  }
+
+  console.log(allprojects)
+
+  useEffect(()=>{
+    getAllProjects()
+  },[])
+
+
   return (
     <>
     <Header/>
@@ -21,9 +58,12 @@ function Projects() {
     </div>
 
     <Row className='container-fluid mt-5'>
-        <Col sm={12} md={6} lg={4}>
-        <ProjectCart/>
-        </Col>
+    {allprojects?.length>0?allprojects.map(project=>(
+          <Col sm={12}  md={6} lg={4}>
+          <ProjectCart project={project}/>
+          </Col>
+        )):null
+      }  
     </Row>
       
     </>

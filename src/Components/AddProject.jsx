@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Button, FloatingLabel, Form, Modal } from 'react-bootstrap'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { addProjectAPI } from '../services/allAPI';
+import { addProjectResponseContext } from '../../ContextAPI/ContextShare';
 
 function AddProject() {
+
+
+  const {addProjectResponse,setAddProjectResponse}=useContext(addProjectResponseContext)
   const [show, setShow] = useState(false);
 
   const handleClose = () => {
@@ -41,7 +46,7 @@ function AddProject() {
   },[projectData.projectImage])
 
 
-  const handleAddProjects=()=>{
+  const handleAddProjects=async()=>{
 const{ title,languages,overview,github,website,projectImage}=projectData
 if(!title || !languages || !overview || !github || !website || !projectImage){
   toast.info("Plese fill all missing fields")
@@ -49,7 +54,7 @@ if(!title || !languages || !overview || !github || !website || !projectImage){
 else{
     
 
- reqBody=new FormData()
+ const reqBody=new FormData()
 
  reqBody.append("title",title)
  reqBody.append("languages",languages)
@@ -58,9 +63,32 @@ else{
  reqBody.append("website",website)
  reqBody.append("projectImage",projectImage)
 
- const reqHeader={
- "Content-Type":"multipart/form-data"
+ const token=sessionStorage.getItem('token')
+
+ if(token){
+
+  const reqHeader={
+    "Content-Type":"multipart/form-data",
+    'authorization':`Bearer ${token}`
+   
+    }
+    try{
+      const result=await addProjectAPI(reqBody,reqHeader)
+      console.log(result);
+      if(result.status==200){
+        handleClose()
+        setAddProjectResponse(result.data)
+      }else{
+        toast.warning(result.response.data)
+      }
+      
+
+    }catch(err){
+      console.log(err)
+    }
  }
+
+
 
 
 }
