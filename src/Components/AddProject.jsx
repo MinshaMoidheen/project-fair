@@ -10,6 +10,8 @@ function AddProject() {
 
   const {addProjectResponse,setAddProjectResponse}=useContext(addProjectResponseContext)
   const [show, setShow] = useState(false);
+  const handleShow = () => setShow(true);
+
 
   const handleClose = () => {
     setShow(false);
@@ -18,7 +20,6 @@ function AddProject() {
     })
     setPreview("")
   }
-  const handleShow = () => setShow(true);
 
   const [projectData,setProjectData]=useState({
     title:"",languages:"",overview:"",github:"",website:"",projectImage:""

@@ -1,13 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react'
 import AddProject from './AddProject'
-import { getUserProjectAPI } from '../services/allAPI'
-import { addProjectResponseContext } from '../../ContextAPI/ContextShare'
+import { deleteProjectAPI, getUserProjectAPI } from '../services/allAPI'
+import { addProjectResponseContext, editProjectResponseContext } from '../../ContextAPI/ContextShare'
+import EditProject from './EditProject'
 
 
 function MyProject() {
 
   const[allprojects,setAllProjects]=useState([])
   const {addProjectResponse,setAddProjectResponse}=useContext(addProjectResponseContext)
+  const {editProjectResponse,setEditProjectResponse}=useContext(editProjectResponseContext)
+
 
 
   const getUserProjects=async()=>{
@@ -37,9 +40,37 @@ console.log(err);
 
   console.log(allprojects)
 
+
+  const deleteProjects=async(pid)=>{
+    const token=sessionStorage.getItem('token')
+    if(token){
+      const reqHeader={
+        "Content-Type":"application/json",
+        'authorization':`Bearer ${token}`
+       
+        }
+        try{
+          const result=await deleteProjectAPI(pid,reqHeader)
+          if(result.status==200){
+            getUserProjects()
+          }
+          else{
+            console.log(result.response.data);
+            
+          }
+
+        }catch(err){
+          console.log(err)
+        }
+    }
+
+
+  }
+
   useEffect(()=>{
     getUserProjects()
-  },[addProjectResponse])
+  },[addProjectResponse,
+    editProjectResponse])//context api integreation
 
   return (
     <>
@@ -57,10 +88,11 @@ console.log(err);
         <div key={index} className="mt-4 border container-fluid ">
         <div className="d-flex">
         <h3 className='text-dark'>{project.title}</h3>
-          <div className="ms-auto">
-          <a className='me-3 btn text-dark'><i class="fa-solid fa-pen-to-square"></i></a>
+          <div className="ms-auto d-flex">
+            <EditProject project={project}/>
+            
           <a className='me-3 btn text-dark' href={project.github} target='_blank'><i class="fa-brands fa-github"></i></a>
-          <a className='me-3 btn text-dark'><i class="fa-solid fa-trash"></i></a>
+          <button className='me-3 btn text-dark' onClick={() => deleteProjects(project?._id)}><i class="fa-solid fa-trash"></i></button>
         </div>
         </div>
           

@@ -5,12 +5,16 @@ import './index.css'
 import { BrowserRouter } from 'react-router-dom'
 import './bootstrap.min.css'
 import ContextShare from '../ContextAPI/ContextShare.jsx'
+import TokenAuth from '../ContextAPI/TokenAuth.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
     <ContextShare>
-    <App />
+      <TokenAuth>
+      <App />
+      </TokenAuth>
+    
     </ContextShare>
     </BrowserRouter>
   </StrictMode>,

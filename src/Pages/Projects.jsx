@@ -9,6 +9,8 @@ function Projects() {
 
   const[allprojects,setAllProjects]=useState([])
 
+  const[searchKey,setSearchKey]=useState('')
+
   const getAllProjects=async()=>{
     const token=sessionStorage.getItem('token')
     if(token){
@@ -19,7 +21,7 @@ function Projects() {
         }
 
         try{
-          const result=await getAllProjectAPI(reqHeader)
+          const result=await getAllProjectAPI(searchKey,reqHeader)
           if(result.status==200){
             setAllProjects(result.data)
           }
@@ -34,11 +36,11 @@ console.log(err);
     }
   }
 
-  console.log(allprojects)
+  console.log(searchKey)
 
   useEffect(()=>{
     getAllProjects()
-  },[])
+  },[searchKey])
 
 
   return (
@@ -49,7 +51,7 @@ console.log(err);
 
         <div className="d-flex justify-content-center align-items-center">
             <div className="d-flex border w-50 rounded mb-3">
-                <input type="text" className='form-control' placeholder='Search by technologies'/>
+                <input onChange={e=>setSearchKey(e.target.value)} type="text" className='form-control' placeholder='Search by technologies'/>
                 <i style={{marginLeft:'-50px',marginTop:"12px"}} class="fa-solid fa-magnifying-glass"></i>
             </div>
 
@@ -58,12 +60,15 @@ console.log(err);
     </div>
 
     <Row className='container-fluid mt-5'>
-    {allprojects?.length>0?allprojects.map(project=>(
-          <Col sm={12}  md={6} lg={4}>
-          <ProjectCart project={project}/>
-          </Col>
-        )):null
-      }  
+    {allprojects?.length > 0 ? (
+          allprojects.map((project, index) => (
+            <Col sm={12} md={6} lg={4} key={index}>
+              <ProjectCart project={project} />
+            </Col>
+          ))
+        ) : (
+          <div>No projects found</div>
+        )}
     </Row>
       
     </>

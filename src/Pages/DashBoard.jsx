@@ -20,7 +20,7 @@ else{
   },[])
   return (
     <>
-      <Header/>
+      <Header insideDashboard/>
 
       <Row style={{justifyContent:"space-between"}}>
       <Col sm={12} md={4} >
